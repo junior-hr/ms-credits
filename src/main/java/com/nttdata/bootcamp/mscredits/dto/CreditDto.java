@@ -54,6 +54,7 @@ public class CreditDto {
         return Mono.just(this.getCreditType()).flatMap(ct -> {
             Boolean isOk = false;
             if (this.getCreditType().equalsIgnoreCase("Personal")) { //Tarjeta de credito personal.
+
                 isOk = true;
             } else if (this.getCreditType().equalsIgnoreCase("Business")) { //Tarjeta de credito Empresarial.
                 isOk = true;

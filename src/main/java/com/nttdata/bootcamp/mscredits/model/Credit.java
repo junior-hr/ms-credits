@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Document(collection = "Credit")
 @Getter
@@ -40,5 +41,11 @@ public class Credit {
     private Boolean status;
 
     private Double balance;
+
+    private LocalDateTime disbursementDate;
+
+    private LocalDateTime paymentDate;
+
+    private LocalDateTime expirationDate;
 
 }

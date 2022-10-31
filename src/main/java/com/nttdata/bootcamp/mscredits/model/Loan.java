@@ -6,6 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.Builder;
 import org.springframework.data.annotation.Id;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -23,5 +27,10 @@ public class Loan {
     private String currency;
     private Integer numberQuotas;
     private String status;
-    private Double balance;
+    //private Double balance;
+    private Double debtBalance;
+    private LocalDateTime disbursementDate;
+    private LocalDateTime paymentDate;
+    private LocalDateTime expirationDate;
+
 }
