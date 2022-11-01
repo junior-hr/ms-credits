@@ -1,0 +1,6 @@
+projectKey=com.nttdata.bootcamp:ms-credits
+serverUrl=http://localhost:9000
+serverVersion=9.7.1.62043
+dashboardUrl=http://localhost:9000/dashboard?id=com.nttdata.bootcamp%3Ams-credits
+ceTaskId=AYQww25abx2TDfRCa-FM
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYQww25abx2TDfRCa-FM
