@@ -28,12 +28,12 @@ public class CreditController {
 
     @GetMapping
     public Mono<ResponseEntity<Flux<Credit>>> listCredits() {
-        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(service.findAll()));
+        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(service.findAll()));
     }
 
     @GetMapping("/{idCredit}")
     public Mono<ResponseEntity<Credit>> viewCreditDetails(@PathVariable("idCredit") String idCredit) {
-        return service.findById(idCredit).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
+        return service.findById(idCredit).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
@@ -46,7 +46,7 @@ public class CreditController {
                 request.put("mensaje", "Credito guardado con exito");
                 request.put("timestamp", new Date());
                 return ResponseEntity.created(URI.create("/api/credits/".concat(c.getIdCredit())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(request);
+                        .contentType(MediaType.APPLICATION_JSON).body(request);
             });
         });
     }
@@ -55,7 +55,7 @@ public class CreditController {
     public Mono<ResponseEntity<Credit>> editCredit(@Valid @RequestBody CreditDto creditDto, @PathVariable("idCredit") String idCredit) {
         return service.update(creditDto, idCredit)
                 .map(c -> ResponseEntity.created(URI.create("/api/credits/".concat(idCredit)))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+                        .contentType(MediaType.APPLICATION_JSON).body(c));
     }
 
     @DeleteMapping("/{idCredit}")
@@ -66,18 +66,14 @@ public class CreditController {
     @GetMapping("creditCard/{documentNumber}")
     public Mono<ResponseEntity<List<Credit>>> getCreditCardBalanceByDocumentNumber(@PathVariable("documentNumber") String documentNumber) {
         return service.findByDocumentNumber(documentNumber)
-                .flatMap(mm -> {
-                    log.info("--getCreditCardBalanceByDocumentNumber-------: " + mm.toString());
-                    return Mono.just(mm);
-                })
                 .collectList()
-                .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
+                .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @GetMapping("creditNumber/{creditNumber}")
     public Mono<ResponseEntity<Credit>> viewCreditNumberDetails(@PathVariable("creditNumber") String creditNumber) {
-        return service.findByCreditNumber(creditNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
+        return service.findByCreditNumber(creditNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
 
 
@@ -86,14 +82,14 @@ public class CreditController {
     @GetMapping("movements/documentNumber/{documentNumber}")
     public Mono<ResponseEntity<CreditDto>> getMovementsOfCreditByDocumentNumber(@PathVariable("documentNumber") String documentNumber) {
         return service.findMovementsByDocumentNumber(documentNumber)
-                .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
+                .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     //Buscar productos de tarjeta de credito por number de documento del cliente
     @GetMapping("/creditsDetails/{documentNumber}")
     public Mono<ResponseEntity<Flux<Credit>>> getViewCreditDetailsByDocumentNumber(@PathVariable("documentNumber") String documentNumber) {
-        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8)
+        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
                 .body(service.findCreditByDocumentNumber(documentNumber)))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }

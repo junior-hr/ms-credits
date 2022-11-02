@@ -47,6 +47,7 @@ public class CreditServiceImpl implements CreditService {
     @Override
     public Mono<Credit> save(CreditDto creditDto) {
         return clientRepository.findClientByDni(String.valueOf(creditDto.getDocumentNumber()))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente", "DocumentNumber", String.valueOf(creditDto.getDocumentNumber()))))
                 .flatMap(client -> {
                     return this.validateCreditType(creditDto, client)
                             .flatMap(at -> {
@@ -68,6 +69,7 @@ public class CreditServiceImpl implements CreditService {
     public Mono<Credit> update(CreditDto creditDto, String idCredit) {
 
         return clientRepository.findClientByDni(String.valueOf(creditDto.getDocumentNumber()))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente", "DocumentNumber", String.valueOf(creditDto.getDocumentNumber()))))
                 .flatMap(client -> {
                     return creditDto.validateFields()
                             .flatMap(at -> {
@@ -101,26 +103,8 @@ public class CreditServiceImpl implements CreditService {
 
     @Override
     public Flux<Credit> findByDocumentNumber(String documentNumber) {
-
-        log.info("Inicio----findByDocumentNumber-------: ");
         log.info("Inicio----findByDocumentNumber-------documentNumber : " + documentNumber);
-        return creditRepository.findByCreditClient(documentNumber)
-                .flatMap(credit -> {
-                    log.info("Inicio----findByCreditClient-------: ");
-                    return movementRepository.findLastMovementByCreditNumber(credit.getCreditNumber())
-                            .switchIfEmpty(Mono.defer(() -> {
-                                log.info("----2 switchIfEmpty-------: ");
-                                Movement mv = Movement.builder()
-                                        .balance(credit.getCreditLineAmount())
-                                        .build();
-                                return Mono.just(mv);
-                            }))
-                            .flatMap(m -> {
-                                log.info("----findByDocumentNumber setBalance-------: ");
-                                credit.setBalance(m.getBalance());
-                                return Mono.just(credit);
-                            });
-                });
+        return creditRepository.findByCreditClient(documentNumber);
     }
 
     @Override
@@ -156,22 +140,30 @@ public class CreditServiceImpl implements CreditService {
 
     //Validar CreditType
     public Mono<Boolean> validateCreditType(CreditDto creditDto, Client client) {
-        log.info("Inicio validateCreditType-------: ");
+        log.info("Inicio validateCreditType-------creditDto: " + creditDto.toString());
+        log.info("Inicio validateCreditType-------client: " + client.toString());
         return Mono.just(creditDto.getCreditType()).flatMap(ct -> {
             //Boolean isOk = false;
             if (creditDto.getCreditType().equalsIgnoreCase("Personal")) { //Tarjeta de credito personal.
-                if (validateCreditDebt(client.getDocumentNumber(), "Personal").equals(true)) {
-                    return validateLoanDebt(client.getDocumentNumber(), "Personal");
-                } else {
-                    return Mono.just(false);
-                }
+                return validateCreditDebt(client.getDocumentNumber(), "Personal").flatMap( vcd -> {
+                    if ((vcd).equals(true)) {
+                        log.info("if validateCreditDebt-------: " );
+                        return validateLoanDebt(client.getDocumentNumber(), "Personal");
+                    } else {
+                        log.info("else validateCreditDebt-------: " );
+                        return Mono.just(false);
+                    }
+                });            
             } else if (creditDto.getCreditType().equalsIgnoreCase("Business")) { //Tarjeta de credito Empresarial.
-                if (validateCreditDebt(client.getDocumentNumber(), "Business").equals(true)) {
-                    return validateLoanDebt(client.getDocumentNumber(), "Business");
-                } else {
-                    return Mono.just(false);
-                }
+                return validateCreditDebt(client.getDocumentNumber(), "Business").flatMap( vcd -> {
+                    if (vcd.equals(true)) {
+                        return validateLoanDebt(client.getDocumentNumber(), "Business");
+                    } else {
+                        return Mono.just(false);
+                    }
+                });
             } else {
+                log.info("Inicio validateCreditType-------else: ");
                 return Mono.error(new ResourceNotFoundException("Tarjeta de credito", "CreditType", creditDto.getCreditType()));
             }
             //log.info("Fin validateCreditType-------: ");
@@ -182,23 +174,33 @@ public class CreditServiceImpl implements CreditService {
     //Si tiene deuda retorna false
     public Mono<Boolean> validateCreditDebt(String documentNumber, String creditType) {
 
-        log.info("Inicio----validateLoanDebt-------: ");
-        log.info("Inicio----validateLoanDebt-------documentNumber : " + documentNumber);
+        log.info("Inicio----validateCreditDebt-------: ");
+        log.info("Inicio----validateCreditDebt-------creditType: " + creditType);
+        log.info("Inicio----validateCreditDebt-------documentNumber : " + documentNumber);
         LocalDateTime datetime = LocalDateTime.now();
         return creditRepository.findByCreditClient(documentNumber)
                 .collectList()
+        		.doOnNext(x -> log.info("Inicio----findByCreditClient-------doOnNext: "))
                 .flatMap(l -> {
+                    log.info("Inicio----findByCreditClient-------libre: ");
+                    log.info("Inicio----validateCreditDebt-------l: " + (l == null ? "" : l.toString()));
                     if (creditType.equals("Personal")) {
+                        log.info("Inicio----validateCreditDebt-------Personal: ");
                         if (l.size() == Constants.ZERO || l == null) {
+                            log.info("Inicio----validateCreditDebt-------if1: ");
                             return Mono.just(true);
                         } else {
+                            log.info("Inicio----validateCreditDebt-------else1: ");
                             if (datetime.isBefore(l.get(0).getExpirationDate())) {
+                                log.info("Inicio----validateCreditDebt-------if2: ");
                                 return Mono.just(true);//No se vence
                             } else {
+                                log.info("Inicio----validateCreditDebt-------else2: ");
                                 return Mono.just(false);//Ya se vencio
                             }
                         }
                     } else if (creditType.equals("Business")) {
+                        log.info("Inicio----validateCreditDebt-------Business: ");
                         if (l == null) {
                             return Mono.just(true);
                         } else {
@@ -208,8 +210,10 @@ public class CreditServiceImpl implements CreditService {
                                 return Mono.just(false);//Ya se vencio
                             }
                         }
+                    }else{
+                        log.info("Inicio----validateCreditDebt-------else0: ");
+                        return Mono.just(false);
                     }
-                    return Mono.just(true);
                 });
     }
 
