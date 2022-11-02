@@ -14,9 +14,7 @@ spring:
     name: service-credits
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: BankCreditsDB
+      uri: mongodb://localhost:27017/BankCreditsDB
       auto-index-creation: true
   config:
     import: optional:configserver:http://ms-config-server:8888
