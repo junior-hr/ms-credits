@@ -1,10 +1,8 @@
 package com.nttdata.bootcamp.mscredits.infrastructure;
 
 import com.nttdata.bootcamp.mscredits.config.WebClientConfig;
-import com.nttdata.bootcamp.mscredits.model.Client;
 import com.nttdata.bootcamp.mscredits.model.Movement;
 import com.nttdata.bootcamp.mscredits.util.Constants;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +41,6 @@ public class MovementRepository {
     }
 
     public Flux<Movement> getDefaultfindMovementsByCreditNumber(String creditNumber, Exception e) {
-    	return Flux.just(new Movement());
+        return Flux.just(new Movement());
     }
 }

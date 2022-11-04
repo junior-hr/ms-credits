@@ -5,7 +5,6 @@ import com.nttdata.bootcamp.mscredits.infrastructure.ClientRepository;
 import com.nttdata.bootcamp.mscredits.infrastructure.LoanRepository;
 import com.nttdata.bootcamp.mscredits.infrastructure.MovementRepository;
 import com.nttdata.bootcamp.mscredits.model.Client;
-import com.nttdata.bootcamp.mscredits.model.Movement;
 import com.nttdata.bootcamp.mscredits.util.Constants;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -15,7 +14,6 @@ import com.nttdata.bootcamp.mscredits.model.Credit;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.nttdata.bootcamp.mscredits.infrastructure.CreditRepository;
 import com.nttdata.bootcamp.mscredits.exception.ResourceNotFoundException;
-
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -145,17 +143,17 @@ public class CreditServiceImpl implements CreditService {
         return Mono.just(creditDto.getCreditType()).flatMap(ct -> {
             //Boolean isOk = false;
             if (creditDto.getCreditType().equalsIgnoreCase("Personal")) { //Tarjeta de credito personal.
-                return validateCreditDebt(client.getDocumentNumber(), "Personal").flatMap( vcd -> {
+                return validateCreditDebt(client.getDocumentNumber(), "Personal").flatMap(vcd -> {
                     if ((vcd).equals(true)) {
-                        log.info("if validateCreditDebt-------: " );
+                        log.info("if validateCreditDebt-------: ");
                         return validateLoanDebt(client.getDocumentNumber(), "Personal");
                     } else {
-                        log.info("else validateCreditDebt-------: " );
+                        log.info("else validateCreditDebt-------: ");
                         return Mono.just(false);
                     }
-                });            
+                });
             } else if (creditDto.getCreditType().equalsIgnoreCase("Business")) { //Tarjeta de credito Empresarial.
-                return validateCreditDebt(client.getDocumentNumber(), "Business").flatMap( vcd -> {
+                return validateCreditDebt(client.getDocumentNumber(), "Business").flatMap(vcd -> {
                     if (vcd.equals(true)) {
                         return validateLoanDebt(client.getDocumentNumber(), "Business");
                     } else {
@@ -180,7 +178,7 @@ public class CreditServiceImpl implements CreditService {
         LocalDateTime datetime = LocalDateTime.now();
         return creditRepository.findByCreditClient(documentNumber)
                 .collectList()
-        		.doOnNext(x -> log.info("Inicio----findByCreditClient-------doOnNext: "))
+                .doOnNext(x -> log.info("Inicio----findByCreditClient-------doOnNext: "))
                 .flatMap(l -> {
                     log.info("Inicio----findByCreditClient-------libre: ");
                     log.info("Inicio----validateCreditDebt-------l: " + (l == null ? "" : l.toString()));
@@ -210,7 +208,7 @@ public class CreditServiceImpl implements CreditService {
                                 return Mono.just(false);//Ya se vencio
                             }
                         }
-                    }else{
+                    } else {
                         log.info("Inicio----validateCreditDebt-------else0: ");
                         return Mono.just(false);
                     }

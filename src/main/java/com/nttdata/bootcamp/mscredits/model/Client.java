@@ -1,13 +1,17 @@
 package com.nttdata.bootcamp.mscredits.model;
 
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.Builder;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
 
+/**
+ * Class Client.
+ * Credit microservice class Client.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

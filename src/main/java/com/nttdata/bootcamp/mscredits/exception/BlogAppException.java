@@ -1,10 +1,14 @@
 package com.nttdata.bootcamp.mscredits.exception;
 
+import org.springframework.http.HttpStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.http.HttpStatus;
 
+/**
+ * Class CreditService.
+ * Credit microservice class CreditService.
+ */
 @Getter
 @Setter
 @NoArgsConstructor

@@ -1,10 +1,14 @@
 package com.nttdata.bootcamp.mscredits.application;
 
 import com.nttdata.bootcamp.mscredits.dto.CreditDto;
+import com.nttdata.bootcamp.mscredits.model.Credit;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import com.nttdata.bootcamp.mscredits.model.Credit;
 
+/**
+ * Class CreditService.
+ * Credit microservice class CreditService.
+ */
 public interface CreditService {
 
     public Flux<Credit> findAll();

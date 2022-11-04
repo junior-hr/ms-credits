@@ -3,7 +3,6 @@ package com.nttdata.bootcamp.mscredits.infrastructure;
 import com.nttdata.bootcamp.mscredits.config.WebClientConfig;
 import com.nttdata.bootcamp.mscredits.model.Loan;
 import com.nttdata.bootcamp.mscredits.util.Constants;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class LoanRepository {
     @Autowired
     ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory;
 
-	@CircuitBreaker(name = Constants.LOAN_CB, fallbackMethod = "getDefaultLoanByDocumentNumber")
+    @CircuitBreaker(name = Constants.LOAN_CB, fallbackMethod = "getDefaultLoanByDocumentNumber")
     public Flux<Loan> findLoansByDocumentNumber(String documentNumber) {
 
         log.info("Inicio----findLoansByDocumentNumber-------: ");
@@ -41,8 +40,9 @@ public class LoanRepository {
                 .flatMapMany(iterable -> Flux.fromIterable(iterable));
         return alerts;
     }
-    
+
     public Flux<Loan> getDefaultLoanByDocumentNumber(String documentNumber, Exception e) {
-	    return Flux.empty();
+        return Flux.empty();
     }
+
 }
