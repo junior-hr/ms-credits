@@ -17,7 +17,7 @@ public interface CreditRepository extends ReactiveMongoRepository<Credit, String
     Flux<Credit> findByCreditClient(String documentNumber);
 
     @Query(value = "{'creditNumber' : ?0}")
-    Mono<Credit> findByCreditNumber(String creditNumber);
+    Mono<Credit> findCreditByCreditNumber(Integer creditNumber);
 
     @Query(value = "{'client.documentNumber' : ?0}")
     Mono<CreditDto> findByDocumentNumber(String documentNumber);

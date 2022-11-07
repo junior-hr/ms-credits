@@ -63,7 +63,7 @@ public class CreditController {
         return service.delete(idCredit).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
     }
 
-    @GetMapping("creditCard/{documentNumber}")
+    @GetMapping("/creditCard/{documentNumber}")
     public Mono<ResponseEntity<List<Credit>>> getCreditCardBalanceByDocumentNumber(@PathVariable("documentNumber") String documentNumber) {
         return service.findByDocumentNumber(documentNumber)
                 .collectList()
@@ -71,15 +71,15 @@ public class CreditController {
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @GetMapping("creditNumber/{creditNumber}")
-    public Mono<ResponseEntity<Credit>> viewCreditNumberDetails(@PathVariable("creditNumber") String creditNumber) {
+    @GetMapping("/creditNumber/{creditNumber}")
+    public Mono<ResponseEntity<Credit>> viewCreditNumberDetails(@PathVariable("creditNumber") Integer creditNumber) {
         return service.findByCreditNumber(creditNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
 
 
     }
 
-    @GetMapping("movements/documentNumber/{documentNumber}")
+    @GetMapping("/movements/documentNumber/{documentNumber}")
     public Mono<ResponseEntity<CreditDto>> getMovementsOfCreditByDocumentNumber(@PathVariable("documentNumber") String documentNumber) {
         return service.findMovementsByDocumentNumber(documentNumber)
                 .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c))

@@ -23,7 +23,7 @@ public interface CreditService {
 
     public Flux<Credit> findByDocumentNumber(String documentNumber);
 
-    public Mono<Credit> findByCreditNumber(String creditNumber);
+    public Mono<Credit> findByCreditNumber(Integer creditNumber);
 
     public Mono<CreditDto> findMovementsByDocumentNumber(String documentNumber);
 
